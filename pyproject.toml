@@ -1,0 +1,29 @@
+[build-system]
+requires = [
+  "hatchling", 
+  "pytorch>=2.2.2", 
+  "torchmetrics>=1.4.0", 
+  #"git+https://github.com/jeromerony/adversarial-library",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "rse_mohosb"
+version = "0.0.1"
+authors = [
+  { name="Bálint Mohos", email="mohosb@gmail.com" },
+  { name="Levente Ferenc Halmosi", email="halmosilevente@gmail.com" },
+]
+description = "A library for evaluationg the robustness of segmentation models."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/szegedai/Robust-Segmentation-Evaluation"
+Issues = "https://github.com/szegedai/Robust-Segmentation-Evaluation/issues"
+
