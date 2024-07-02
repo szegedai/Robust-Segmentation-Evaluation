@@ -8,52 +8,6 @@ import torch.nn.functional as F
 from functools import partial
 
 
-def dlr_loss(x, y, reduction='none'):
-    x_sorted, ind_sorted = x.sort(dim=1)
-    ind = (ind_sorted[:, -1] == y).float()
-        
-    return -(x[torch.arange(x.shape[0]), y] - x_sorted[:, -2] * ind - \
-        x_sorted[:, -1] * (1. - ind)) / (x_sorted[:, -1] - x_sorted[:, -3] + 1e-12)
-
-
-def dlr_loss_targeted(x, y, y_target):
-    x_sorted, ind_sorted = x.sort(dim=1)
-    u = torch.arange(x.shape[0])
-
-    return -(x[u, y] - x[u, y_target]) / (x_sorted[:, -1] - .5 * (
-        x_sorted[:, -3] + x_sorted[:, -4]) + 1e-12)
-
-
-def cospgd_loss(pred, target, reduction='mean', ignore_index=-1):
-    """Implementation of the loss for semantic segmentation from
-    https://arxiv.org/abs/2302.02213.
-
-    pred: B x cls x h x w
-    target: B x h x w
-    """
-
-    sigm_pred = torch.sigmoid(pred)
-    sh = target.shape
-    n_cls = pred.shape[1]
-    
-    mask_background = (target != ignore_index).long()
-    y = mask_background * target  # One-hot encoding doesn't support -1.
-    y = F.one_hot(y.view(sh[0], -1), n_cls)
-    y = y.permute(0, 2, 1).view(pred.shape)
-    w = F.cosine_similarity(sigm_pred, y)
-    w = mask_background * w  # Ignore pixels with label -1.
-    
-    loss = F.cross_entropy(
-        pred, target, reduction='none', ignore_index=ignore_index)
-    assert w.shape == loss.shape
-    loss = w.detach() * loss
-
-    if reduction == 'mean':
-        return loss.view(sh[0], -1).mean(-1)
-
-    return loss
-
-
 def masked_cross_entropy(pred, target, reduction='none', ignore_index=-1):
     """Cross-entropy of only correctly classified pixels."""
 
@@ -67,31 +21,7 @@ def masked_cross_entropy(pred, target, reduction='none', ignore_index=-1):
     return loss
 
 
-def margin_loss(pred, target):
-
-    sh = target.shape
-    n_cls = pred.shape[1]
-    y = F.one_hot(target.view(sh[0], -1), n_cls)
-    y = y.permute(0, 2, 1).view(pred.shape)
-    logits_target = (y * pred).sum(1)
-    logits_other = (pred - 1e10 * y).max(1)[0]
-
-    return logits_other - logits_target
-
-
-def masked_margin_loss(pred, target):
-    """Margin loss of only correctly classified pixels."""
-
-    pred = pred / (pred ** 2).sum(1, keepdim=True).sqrt().detach() 
-    loss = margin_loss(pred, target)
-    mask = pred.max(1)[1] == target
-    loss = mask.float().detach() * loss 
-
-    return loss.view(pred.shape[0], -1).mean(-1)
-
-
-def single_logits_loss(pred, target, normalized=False, reduction='none',
-        masked=False, ignore_index=-1):
+def single_logits_loss(pred, target, normalized=False, reduction='none', masked=False, ignore_index=-1):
     """The (normalized) logit of the correct class is minimized."""
 
     if normalized:
@@ -113,29 +43,7 @@ def single_logits_loss(pred, target, normalized=False, reduction='none',
     return loss
 
 
-def targeted_single_logits_loss(
-    pred, labels, target, normalized=False, reduction='none',
-    masked=False):
-    """The (normalized) logit of the target class is maximized."""
-
-    if normalized:
-        pred = pred / (pred ** 2).sum(1, keepdim=True).sqrt() #.detach()
-    sh = target.shape
-    n_cls = pred.shape[1]
-    y = F.one_hot(target.view(sh[0], -1), n_cls)
-    y = y.permute(0, 2, 1).view(pred.shape)
-    loss = (y * pred).sum(1)
-    if masked:
-        mask = pred.max(1)[1] == labels
-        loss = mask.float().detach() * loss
-
-    if reduction == 'mean':
-        return loss.view(sh[0], -1).mean(-1)
-    return loss
-
-
-def js_div_fn(p, q, softmax_output=False, reduction='none', red_dim=None,
-    ignore_index=-1):
+def js_div_fn(p, q, softmax_output=False, reduction='none', red_dim=None, ignore_index=-1):
     """Compute JS divergence between p and q.
 
     p: logits [bs, n_cls, ...]
@@ -212,25 +120,13 @@ def check_oscillation(x, j, k, y5, k3=0.75):
 
 
 criterion_dict = {
-    'ce': lambda x, y: F.cross_entropy(
-        x, y, reduction='none', ignore_index=-1),
-    'dlr': dlr_loss,
-    'dlr-targeted': dlr_loss_targeted,
-    'ce-avg': lambda x, y: F.cross_entropy(
-        x, y, reduction='none', ignore_index=-1),
-    'cospgd-loss': partial(cospgd_loss, reduction='none'),
+    #'ce-avg': lambda x, y: F.cross_entropy(x, y, reduction='none', ignore_index=-1),
+    'ce-avg': partial(F.cross_entropy, reduction='none', ignore_index=-1),
     'mask-ce-avg': masked_cross_entropy,
-    'margin-avg': lambda x, y: margin_loss(x, y).view(x.shape[0], -1).mean(-1),
-    'mask-margin-avg': masked_margin_loss,
     'js-avg': partial(js_loss, reduction='none'),
     'segpgd-loss': partial(segpgd_loss, reduction='none'),
-    'mask-norm-corrlog-avg': partial(
-        single_logits_loss, normalized=True, reduction='none', masked=True),
-    'mask-norm-corrlog-avg-targeted': partial(
-        targeted_single_logits_loss, normalized=True, reduction='none',
-        masked=True),
-    }
-
+    'mask-norm-corrlog-avg': partial(single_logits_loss, normalized=True, reduction='none', masked=True),
+}
 
 def apgd_train(model, x, y, eps, n_iter=10, use_rs=False, loss='ce', track_loss=None, y_target=None, ignore_index=-1, x_init=None):
     assert not model.training
