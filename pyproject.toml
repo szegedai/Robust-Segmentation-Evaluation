@@ -3,7 +3,7 @@ requires = [
   "hatchling", 
   "pytorch>=2.2.2", 
   "torchmetrics>=1.4.0", 
-  #"git+https://github.com/jeromerony/adversarial-library",
+  "adv-lib@git+https://github.com/jeromerony/adversarial-library",
 ]
 build-backend = "hatchling.build"
 
