@@ -8,7 +8,6 @@ ATTACKS = (
     'dag-001', 'dag-003', 'pdpgd', 'alma-prox'
 )
 
-@torch.no_grad()
 def build_attacks(attack_names, num_classes, eps=8 / 255):
     attacks = {
         'ce-padam': partial(padam, loss_fn=partial(F.cross_entropy, reduction='none'), num_steps=200, step_size=2 / 255, eps=eps),
@@ -33,9 +32,10 @@ def seg_attack(model, images, labels, attacks, inv_score_fn=None):
         best_scores = torch.full((images.size(0),), float('inf'), device=images.device)
 
         for attack in attacks:
-            adv_images = attack(model, images, labels)
+            with torch.enable_grad():
+                adv_images = attack(model, images, labels)
 
-            scores = inv_score_fn(model(adv_images), labels)
+            scores = inv_score_fn(model(adv_images).cpu(), labels.cpu())
             replace = scores < best_scores
             replace_view = replace.view(-1, *[1] * (images.dim() - 1))
 
@@ -50,4 +50,43 @@ def seg_attack(model, images, labels, attacks, inv_score_fn=None):
             best_images.append(adv_images)
 
     return best_images
+
+@torch.no_grad()
+def evaluate(model, dataloader, attack, metrics, device=None, dtype=None, max_samples=float('inf')):
+    sample_params = next(model.parameters())
+    if not device:
+        device = sample_params.device
+    if not dtype:
+        dtype = sample_params.dtype
+
+    model.eval()
+
+    for m in metrics:
+        m.reset()
+
+    evaluated_samples = 0
+    for images, labels in dataloader:
+        num_samples = images.size(0)
+        samples_to_eval = min(max_samples - evaluated_samples, num_samples)
+
+        images = images[:samples_to_eval].to(device=device, dtype=dtype, non_blocking=True)
+        labels = labels[:samples_to_eval].to(device=device, non_blocking=True)
+
+        with torch.enable_grad():
+            adv_images = attack(model, images, labels)
+        preds = model(adv_images)
+
+        for m in metrics:
+            m.update(preds.cpu(), labels.cpu())
+
+        evaluated_samples += samples_to_eval
+        if evaluated_samples == max_samples:
+            break
+
+    results = [m.compute().item() for m in metrics]
+
+    for m in metrics:
+        m.reset()
+
+    return results
 

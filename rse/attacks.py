@@ -6,7 +6,7 @@ from adv_lib.attacks.segmentation import alma_prox, pdpgd, dag
 @torch.no_grad()
 def padam(model, x, y, loss_fn, eps, step_size, num_steps, bounds=(0, 1), random_start=True, targeted=False):
     multiplier = -1.0 if targeted else 1.0
-    delta = torch.zeros_like(x, dtype=x.dtype, device=x.device)
+    delta = torch.zeros_like(x)
     if random_start:
         delta = delta.uniform_(-eps, eps)
         delta = (x + delta).clamp(*bounds) - x
@@ -22,7 +22,7 @@ def padam(model, x, y, loss_fn, eps, step_size, num_steps, bounds=(0, 1), random
         delta.copy_((x + delta).clamp(*bounds) - x, non_blocking=True)
     return x + delta
 
-dag = torch.enable_grad(dag)
-pdpgd = torch.enable_grad(pdpgd)
-alma_prox = torch.enable_grad(alma_prox)
+#dag = torch.enable_grad(dag)
+#pdpgd = torch.enable_grad(pdpgd)
+#alma_prox = torch.enable_grad(alma_prox)
 
