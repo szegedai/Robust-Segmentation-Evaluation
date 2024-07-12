@@ -4,7 +4,7 @@
 *Levente Halmosi*, *Bálint Mohos*, *Márk Jelasity*\
 ECCV 2024\
 
-Robust-Segmentation-Evaluation introduces a reliable framework for evaluating the adversarial robustness of segmentation models by leveraging a set of diverse and hyperparameter-free attacks:
+Robust-Segmentation-Evaluation introduces a reliable framework for evaluating the adversarial robustness of segmentation models by leveraging a set of diverse attacks:
 
 1. **Clean:** Evaluation without any adversarial perturbation.
 2. **PAdam-CE:** A novel, step size-free variant of the Projected Adam (PAdam) algorithm optimized using the Cross-Entropy (CE) loss function.
