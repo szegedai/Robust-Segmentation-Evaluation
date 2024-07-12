@@ -1,6 +1,7 @@
 # Robust-Segmentation-Evaluation
 
 **Authors:** Levente Halmosi, Bálint Mohos, Márk Jelasity
+
 **Institution:** University of Szeged, Hungary; HUN-REN-SZTE Research Group on AI, Szeged, Hungary  
 **Conference:** ECCV 2024  
 **Paper:** 
@@ -20,6 +21,16 @@ Robust-Segmentation-Evaluation introduces a reliable framework for evaluating th
 11. **PDPGD:** A variant of the Projected Dual PGD (PDPGD) algorithm for enhanced robustness assessment.
 
 The key advantage of Robust-Segmentation-Evaluation lies in its pre-determined hyperparameters, eliminating the need for tuning and simplifying the evaluation process for any segmentation model.
+
+# How to use AutoAttack
+
+### Installation
+
+```
+pip install git+https://github.com/szegedai/Robust-Segmentation-Evaluation
+```
+
+### PyTorch Segmentation models
 
 # References
 The attacks and methodologies are inspired and adapted from existing works on adversarial robustness, specifically tailored for semantic segmentation tasks. Key references include:
