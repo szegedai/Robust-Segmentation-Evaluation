@@ -20,3 +20,10 @@ Robust-Segmentation-Evaluation introduces a reliable framework for evaluating th
 11. **PDPGD:** A variant of the Projected Dual PGD (PDPGD) algorithm for enhanced robustness assessment.
 
 The key advantage of Robust-Segmentation-Evaluation lies in its pre-determined hyperparameters, eliminating the need for tuning and simplifying the evaluation process for any segmentation model.
+
+# References
+The attacks and methodologies are inspired and adapted from existing works on adversarial robustness, specifically tailored for semantic segmentation tasks. Key references include:
+
+Robust Semantic Segmentation: Strong Adversarial Attacks and Fast Training of Robust Models by Francesco Croce, Naman D Singh, and Matthias Hein​ (ar5iv)​​ (GitHub)​.
+Various loss functions and their implications for effective adversarial attacks as discussed in the literature on semantic segmentation robustness​ (ar5iv)​​ (GitHub)​.
+This evaluation suite is designed to provide a thorough and reliable assessment of model robustness, ensuring that the tested models can withstand diverse adversarial conditions.
