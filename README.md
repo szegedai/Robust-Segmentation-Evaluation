@@ -1,7 +1,7 @@
 # Robust-Segmentation-Evaluation
 
-**Authors:** Levente Halmosi, Bálint Mohos, Márk Jelasity\n
-**Institution:** University of Szeged, Hungary; HUN-REN-SZTE Research Group on AI, Szeged, Hungary  
+**Authors:** Levente Halmosi, Bálint Mohos, Márk Jelasity,
+**Institution:** University of Szeged, Hungary
 **Conference:** ECCV 2024  
 **Paper:** 
 
