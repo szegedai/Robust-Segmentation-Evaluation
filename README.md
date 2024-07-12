@@ -22,7 +22,7 @@ Robust-Segmentation-Evaluation introduces a reliable framework for evaluating th
 
 The key advantage of Robust-Segmentation-Evaluation lies in its pre-determined hyperparameters, eliminating the need for tuning and simplifying the evaluation process for any segmentation model.
 
-# How to use AutoAttack
+# How to use Robust-Segmentation-Evaluation
 
 ### Installation
 
