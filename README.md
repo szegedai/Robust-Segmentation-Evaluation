@@ -1,9 +1,8 @@
 # Robust-Segmentation-Evaluation
 
-**Authors:** Levente Halmosi, Bálint Mohos, Márk Jelasity
-**Institution:** University of Szeged, Hungary
-**Conference:** ECCV 2024  
-**Paper:** 
+"Evaluating the Adversarial Robustness of Semantic Segmentation: Trying Harder Pays Off"\
+*Levente Halmosi*, *Bálint Mohos*, *Márk Jelasity*\
+ECCV 2024\
 
 Robust-Segmentation-Evaluation introduces a reliable framework for evaluating the adversarial robustness of segmentation models by leveraging a set of diverse and hyperparameter-free attacks:
 
