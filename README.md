@@ -3,7 +3,7 @@
 **Authors:** Levente Halmosi, Bálint Mohos, Márk Jelasity
 **Institution:** University of Szeged, Hungary; HUN-REN-SZTE Research Group on AI, Szeged, Hungary  
 **Conference:** ECCV 2024  
-**Paper:** ---
+**Paper:** 
 
 Robust-Segmentation-Evaluation introduces a reliable framework for evaluating the adversarial robustness of segmentation models by leveraging a set of diverse and hyperparameter-free attacks:
 
