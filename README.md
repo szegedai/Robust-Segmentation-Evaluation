@@ -4,9 +4,9 @@
 *Levente Halmosi*, *Bálint Mohos*, *Márk Jelasity*\
 ECCV 2024\
 
-![Result of PAdam-Cos attack on an example PASCAL-VOC image for various
+![Description](illustrations/ships.png "Result of PAdam-Cos attack on an example PASCAL-VOC image for various
 PSPNet models and SEA-AT-Small. Top row: perturbed images; bottom row: predicted
-mask on the perturbed image.](illustrations/ships.jpg "A cute cat")
+mask on the perturbed image.")
 
 Robust-Segmentation-Evaluation introduces a reliable framework for evaluating the adversarial robustness of segmentation models by leveraging a set of diverse attacks:
 
