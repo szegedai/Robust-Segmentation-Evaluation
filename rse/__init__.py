@@ -3,20 +3,23 @@ from functools import partial
 from .attacks import *
 
 ATTACKS = (
-    'ce-padam', 'cos-padam', 
-    'mask-ce-avg-apgd', 'segpgd-loss-apgd', 'js-avg-apgd', 'mask-norm-corrlog-avg-apgd',
+    'no-attack',
+    'padam-ce', 'padam-cos', 
+    'apgd-mask-ce-avg', 'apgd-segpgd-loss', 'apgd-js-avg', 'apgd-mask-norm-corrlog-avg',
     'dag-001', 'dag-003', 'pdpgd', 'alma-prox'
 )
 
 def build_attacks(attack_names, num_classes, eps=8 / 255):
     attacks = {
-        'ce-padam': partial(padam, loss_fn=partial(F.cross_entropy, reduction='none'), num_steps=200, step_size=2 / 255, eps=eps),
-        'cos-padam': partial(padam, loss_fn=lambda z, y: 1 - F.cosine_similarity(z, F.one_hot(y, num_classes).movedim(-1, 1)), num_steps=200, step_size= 2 / 255, eps=eps),
+        'no-attack': lambda m, i, l: i,
 
-        'mask-ce-avg-apgd': partial(apgd, n_iter=300, n_restarts=1, use_rs=True, loss='mask-ce-avg', track_loss='ce-avg', eps=eps),
-        'segpgd-loss-apgd': partial(apgd, n_iter=300, n_restarts=1, use_rs=True, loss='segpgd-loss', track_loss='ce-avg', eps=eps),
-        'js-avg-apgd': partial(apgd, n_iter=300, n_restarts=1, use_rs=True, loss='js-avg', track_loss='ce-avg', eps=eps),
-        'mask-norm-corrlog-avg-apgd': partial(apgd, n_iter=300, n_restarts=1, use_rs=True, loss='mask-norm-corrlog-avg', track_loss='mask-norm-corrlog-avg', eps=eps),
+        'padam-ce': partial(padam, loss_fn=partial(F.cross_entropy, reduction='none'), num_steps=200, step_size=2 / 255, eps=eps),
+        'padam-cos': partial(padam, loss_fn=lambda z, y: 1 - F.cosine_similarity(z, F.one_hot(y, num_classes).movedim(-1, 1)), num_steps=200, step_size= 2 / 255, eps=eps),
+
+        'apgd-mask-ce-avg': partial(apgd, n_iter=300, n_restarts=1, use_rs=True, loss='mask-ce-avg', track_loss='ce-avg', eps=eps),
+        'apgd-segpgd-loss': partial(apgd, n_iter=300, n_restarts=1, use_rs=True, loss='segpgd-loss', track_loss='ce-avg', eps=eps),
+        'apgd-js-avg': partial(apgd, n_iter=300, n_restarts=1, use_rs=True, loss='js-avg', track_loss='ce-avg', eps=eps),
+        'apgd-mask-norm-corrlog-avg': partial(apgd, n_iter=300, n_restarts=1, use_rs=True, loss='mask-norm-corrlog-avg', track_loss='mask-norm-corrlog-avg', eps=eps),
 
         'dag-001': lambda m, i, l: torch.clamp_(dag(m, i, l, max_iter=200, γ=0.001), i - eps, i + eps),
         'dag-003': lambda m, i, l: torch.clamp_(dag(m, i, l, max_iter=200, γ=0.003), i - eps, i + eps),
@@ -26,7 +29,7 @@ def build_attacks(attack_names, num_classes, eps=8 / 255):
     return [attacks[attack_name] for attack_name in attack_names]
 
 @torch.no_grad()
-def seg_attack(model, images, labels, attacks, inv_score_fn=None):
+def composite_attack(model, images, labels, attacks, inv_score_fn=None):
     if inv_score_fn:
         best_images = torch.zeros_like(images)
         best_scores = torch.full((images.size(0),), float('inf'), device=images.device)
