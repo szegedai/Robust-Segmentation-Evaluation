@@ -81,7 +81,7 @@ The attacks and methodologies are inspired and adapted from existing works on ad
 ```
 @inproceedings{halmosi2024robustsegeval,
   title={Evaluating the Adversarial Robustness of Semantic Segmentation: Trying Harder Pays Off}, 
-  author={Levente Halmosi and Bálint Mohos and Márk Jelasity},
+  author={Levente Halmosi and B{\'a}lint Mohos and M{\'a}rk Jelasity},
   year={2024},
   booktitle={ECCV}
 }
