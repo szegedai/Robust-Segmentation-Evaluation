@@ -8,7 +8,7 @@ requires = [
 build-backend = "hatchling.build"
 
 [project]
-name = "rse_mohosb"
+name = "rse"
 version = "0.0.1"
 authors = [
   { name="Bálint Mohos", email="mohosb@gmail.com" },
