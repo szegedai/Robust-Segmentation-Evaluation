@@ -1,7 +1,7 @@
 [build-system]
 requires = [
   "hatchling", 
-  "pytorch>=2.2.2", 
+  "torch>=2.2.2", 
   "torchmetrics>=1.4.0", 
   "adv-lib@git+https://github.com/jeromerony/adversarial-library",
 ]
